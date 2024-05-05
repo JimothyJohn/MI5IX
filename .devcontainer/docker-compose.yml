@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  autogenstudio:
+    image: autogenstudio:latest
+    build:
+      context: ..
+      dockerfile: ./.devcontainer/Dockerfile
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../.autogenstudio:/home/.autogenstudio
+    # working_dir: /volume
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "8081:8081" # Add this line to enable port 8081 
+    networks:
+      - autogen-network
+
+  ollama:
+    image: ollama/ollama:0.1.32
+    environment:
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility,graphics
+    volumes:
+      - ../.ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    networks:
+      - autogen-network
+    healthcheck:
+      test: ollama --version || exit 1
+      interval: 10s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
+networks:
+  autogen-network:
+    driver: bridge

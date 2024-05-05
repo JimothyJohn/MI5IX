@@ -14,3 +14,8 @@ templates/tailwindui-transmit
 
 # My stuff
 *.code-workspace
+venv/
+__pycache__/
+.cache/
+.autogenstudio
+.ollama

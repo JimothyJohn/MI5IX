@@ -1,0 +1,19 @@
+FROM phi3:3.8b-mini-instruct-4k-q4_K_M
+TEMPLATE """
+{{ if .System }}<|system|>
+{{ .System }}<|end|>
+{{ end }}{{ if .Prompt }}<|user|>
+{{ .Prompt }}<|end|>
+{{ end }}<|assistant|>
+{{ .Response }}<|end|>
+"""
+
+SYSTEM """
+"""
+
+PARAMETER num_keep 4
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER stop "<|system|>"
+PARAMETER stop "<|end|>"
+PARAMETER stop "<|endoftext|>"
