@@ -17,5 +17,7 @@ templates/tailwindui-transmit
 venv/
 __pycache__/
 .cache/
-.autogenstudio
-.ollama
+autogenstudio/*
+!autogenstudio/README.md
+ollama/*
+!ollama/README.md

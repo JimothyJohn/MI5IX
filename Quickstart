@@ -13,12 +13,10 @@ fi
 help_function() {
     cat <<EOF
 
-Usage: $(basename "$0") [-h] [--lib-dir LIB_DIR]
+Usage: $(basename "$0") [-h]
 
 Options:
   -h, --help       Display this help message and exit
-  --lib-dir        Optional path to the lib/ directory
-  -f, --function   Name of the lambda function
 
 EOF
 }
@@ -41,42 +39,10 @@ curl -fsSL https://get.docker.com -o get-docker.sh && \\
 EOF
         exit 1
     fi
-
-    if ! command_exists sam; then
-        cat <<EOF
-
-AWS SAM CLI is not installed. Install it with:
-
-wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip && \\
-    unzip aws-sam-cli-linux-x86_64.zip -d sam-installation && \\
-    sudo ./sam-installation/install && \\
-    rm -rf aws-sam-cli-linux-x86_64.zip sam-installation
-
-EOF
-        exit 1
-    fi
-
-    if ! command_exists pip; then
-        cat <<EOF
-
-Pip is not installed. Install it with:
-
-Linux:
-
-sudo apt install python3-pip
-
-MacOS:
-
-brew install python3-pip
-
-EOF
-        exit 1
-    fi
 }
 
 # Main function of the script
 main() {
-    local FUNCTION="cerebro"
 
     # Parse arguments
     while [[ "$#" -gt 0 ]]; do
@@ -84,10 +50,6 @@ main() {
             -h|--help)
                 help_function
                 exit 0
-                ;;
-            -f|--function)
-                FUNCTION="$2"
-                shift 2
                 ;;
             *)
                 echo "Unknown parameter passed: $1"
@@ -97,10 +59,12 @@ main() {
         esac
     done
 
-    docker-compose \
-        -f .devcontainer/docker-compose.yml \
-        up --build
-
+    check_dependencies && \
+        mkdir -p {ollama,autogenstudio} && \
+        sudo docker compose \
+        up --build && \
+        sudo docker exec devcontainer-ollama-1 \
+        ollama pull phi3
 }
 
 main "$@"

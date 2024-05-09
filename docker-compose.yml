@@ -4,15 +4,10 @@ services:
   autogenstudio:
     image: autogenstudio:latest
     build:
-      context: ..
-      dockerfile: ./.devcontainer/Dockerfile
-    stdin_open: true
-    tty: true
+      context: .
+      dockerfile: ./Dockerfile
     volumes:
-      - ../.autogenstudio:/home/.autogenstudio
-    # working_dir: /volume
-    environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      - ../autogenstudio:/home/.autogenstudio
     ports:
       - "8081:8081" # Add this line to enable port 8081 
     networks:
@@ -23,14 +18,14 @@ services:
     environment:
       NVIDIA_DRIVER_CAPABILITIES: compute,utility,graphics
     volumes:
-      - ../.ollama:/root/.ollama
+      - ../ollama:/root/.ollama
     ports:
       - "11434:11434"
     networks:
       - autogen-network
     healthcheck:
       test: ollama --version || exit 1
-      interval: 10s
+      interval: 30s
     deploy:
       resources:
         reservations:
@@ -38,6 +33,16 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
+
+  selenium-chrome:
+    image: selenium/standalone-chrome
+    shm_size: '24gb'
+    volumes:
+      - /dev/shm:/dev/shm # Helps prevent out of memory errors
+    networks:
+      - autogen-network
+    ports:
+      - "4444:4444"
 
 networks:
   autogen-network:

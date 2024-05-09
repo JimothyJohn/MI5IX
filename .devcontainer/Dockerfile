@@ -1,19 +1,14 @@
-FROM python:3.10
+FROM python:3.10-slim-bullseye
 
-WORKDIR /code
+# Configure environment
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_PREFER_BINARY=1
 
-RUN pip install -U gunicorn autogenstudio
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git
 
-RUN useradd -m -u 1000 user
-USER user
-ENV HOME=/home/user \
-	PATH=/home/user/.local/bin:$PATH \
-	AUTOGENSTUDIO_APPDIR=/home/.autogenstudio
 
-WORKDIR $HOME/app
-
-COPY --chown=user . $HOME/app
-
-CMD gunicorn -w $((2 * $(getconf _NPROCESSORS_ONLN) + 1)) \
-	--timeout 12600 -k uvicorn.workers.UvicornWorker \
-	autogenstudio.web.app:app --bind "0.0.0.0:8081"
+COPY requirements.txt /
+RUN pip3 install -U --no-cache-dir -r \
+    /requirements.txt && \
+    rm /requirements.txt
