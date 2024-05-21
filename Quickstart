@@ -59,12 +59,8 @@ main() {
         esac
     done
 
-    check_dependencies && \
-        mkdir -p {ollama,autogenstudio} && \
-        sudo docker compose \
-        up --build && \
-        sudo docker exec devcontainer-ollama-1 \
-        ollama pull phi3
+    python agency
+
 }
 
 main "$@"

@@ -1,2 +1,5 @@
-pyautogen==0.2.27
 python-dotenv==1.0.1
+crewai==0.30.0
+crewai[tools]
+playwright==1.43.0
+exa-py==1.0.9
