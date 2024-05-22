@@ -1,6 +1,7 @@
 # Warning control
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 from crewai import Task
 
 TIP = f"""
@@ -51,6 +52,3 @@ Edit it for readability and understanding over precision.
 An edited report that is factually accurate, relevant, and understandable.
 """,
         )
-
-
-
