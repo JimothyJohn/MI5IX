@@ -8,9 +8,7 @@ TIP = f"""
 If you do your BEST WORK, I'll give you a $10,000 commission!
 """
 
-
-class CustomTasks:
-    def do_research(self, agent):
+def research_task(agent):
         return Task(
             description="""
 Search the internet for information on {topic}.
@@ -25,8 +23,9 @@ Cite your sources.
 Summaries of these sources that help answer {topic}.""",
         )
 
-    def write_report(self, agent):
-        return Task(
+
+def write_report_task(agent):
+    return Task(
             description="""
 Write a summary related to {topic}.
 Highlight key elements and important topics.
@@ -38,8 +37,8 @@ A short, 3-pararaph summary with data provided whenever relevant. Include annota
 """,
         )
 
-    def edit_report(self, agent):
-        return Task(
+def edit_report_task(agent):
+    return Task(
             description="""
 Edit a summary related to {topic}.
 Ensure key elements and important topics are emphazised.

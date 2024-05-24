@@ -4,34 +4,33 @@ import warnings
 warnings.filterwarnings("ignore")
 from crewai import Agent
 from crewai_tools import ScrapeWebsiteTool
-from langchain_openai import ChatOpenAI
-from tools.search import SearchTool
+from crewai_tools import SerperDevTool
 
-senior_llm = ChatOpenAI(model_name="gpt-4o-2024-05-13", temperature=0.4)
-junior_llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.4)
-
-
-# Example of initiating tool that agents can use to search across any discovered websites
 scrapeTool = ScrapeWebsiteTool()
-searchTool = SearchTool()
+searchTool = SerperDevTool()
 
-researchAgent = Agent(
+class ResearchAgency:
+    def __init__(self, llm):
+        self.llm = llm
+
+    def researcher(self):
+        return Agent(
     name="Researcher",
     role="Senior Research Partner",
-    goal="Provide summaries of key primary sources related to {topic}",
+    goal="Discover primary sources that will provide key insights related to {topic}",
     tools=[searchTool, scrapeTool],
-    llm=senior_llm,
+    llm=self.llm,
     backstory="""
+You are a subject matter expert in the field of the {topic}.
 You are a senior consultant that excels in research and excels at parsing out information.
 You do in-depth research by searching the web for reputable information.
-You are a subject matter expert in the field of the {topic}.
 You look through websites and extract relevant information.
 You collect information that helps the audience learn something and make informed decisions.
-Your work is the basis for the Content Writer to write an article on this topic.
 """,
 )
 
-writerAgent = Agent(
+    def writer(self):
+        return Agent(
     name="Writer",
     role="Content Writer",
     backstory="""
@@ -46,10 +45,11 @@ Write insightful and factually accurate summary the topic: {topic}"
 """,
     allow_delegation=False,
     verbose=True,
-    llm=senior_llm,
+    llm=self.llm,
 )
 
-editorAgent = Agent(
+    def editor(self):
+        return Agent(
     name="Editor",
     role="Content Editor",
     goal=f"""
@@ -62,5 +62,5 @@ Your goal is to review the Content Writer's summary to ensure that it follows jo
 """,
     allow_delegation=True,
     verbose=True,
-    llm=senior_llm,
+    llm=self.llm,
 )

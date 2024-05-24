@@ -2,32 +2,30 @@ import warnings
 
 warnings.filterwarnings("ignore")
 from crewai import Crew
+from langchain_openai import ChatOpenAI
 from agents import *
-from tasks import CustomTasks
-
+from tasks import *
 
 class ResearchCrew:
-    def __init__(self):  # Define your custom agents and tasks in agents.py and tasks.py
-        tasks = CustomTasks()
+    def __init__(self, llm=ChatOpenAI(model_name="gpt-4o-2024-05-13", temperature=0.4)):  # Define your custom agents and tasks in agents.py and tasks.py
+        agency = ResearchAgency(llm)
+
+        researchAgent = agency.researcher()
+        writerAgent = agency.writer()
 
         self.crew = Crew(
-            agents=[researchAgent, writerAgent, editorAgent],
+            agents=[researchAgent, writerAgent],
             tasks=[
-                tasks.do_research(
+                research_task(
                     researchAgent,
                 ),
-                tasks.write_report(
+                write_report_task(
                     writerAgent,
-                ),
-                tasks.edit_report(
-                    editorAgent,
                 ),
             ],
             verbose=True,
         )
 
     def run(self, topic):
-
         result = self.crew.kickoff(inputs={"topic": topic})
-
         return result

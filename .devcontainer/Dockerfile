@@ -15,6 +15,8 @@ RUN pip3 install -U --no-cache-dir -r \
     /requirements.txt && \
     rm /requirements.txt
 
+COPY agency/ /app/agency/
+
 # Use a non-root user
 RUN useradd -m appuser
 USER appuser
