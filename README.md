@@ -25,7 +25,6 @@ AZURE_OPENAI_DEPLOYMENT=
 ```bash
 docker build -t mi5ix:latest -f .devcontainer/Dockerfile .
 docker run -p 80:8501 --env-file .env mi5ix:latest streamlit run /app/agency/__main__.py
-
 ```
 
 3. Open your Streamlit app at [http://localhost](http://localhost). Make sure to formulate your topic in the research example as a TOPIC, not a question:

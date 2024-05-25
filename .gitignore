@@ -1,4 +1,4 @@
-.env
+.env*
 .DS_Store
 __pycache__
 
@@ -10,3 +10,4 @@ ollama/models
 ollama/id_*
 db/
 !.env-example
+outputs/*

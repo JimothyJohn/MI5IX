@@ -2,65 +2,75 @@
 import warnings
 
 warnings.filterwarnings("ignore")
+from typing import List
+from langchain_openai import ChatOpenAI
 from crewai import Agent
-from crewai_tools import ScrapeWebsiteTool
-from crewai_tools import SerperDevTool
+from crewai_tools import ScrapeWebsiteTool, SerperDevTool, YoutubeVideoSearchTool
+from langchain_community.tools import GooglePlacesTool
+
 
 scrapeTool = ScrapeWebsiteTool()
 searchTool = SerperDevTool()
+mapTool = GooglePlacesTool()
+contentTool = YoutubeVideoSearchTool()
+
 
 class ResearchAgency:
-    def __init__(self, llm):
+    def __init__(
+        self, llm=ChatOpenAI(model_name="gpt-4o-2024-05-13", temperature=0.4)
+    ):
         self.llm = llm
 
-    def researcher(self):
+    def senior_researcher(self):
         return Agent(
-    name="Researcher",
-    role="Senior Research Partner",
-    goal="Discover primary sources that will provide key insights related to {topic}",
-    tools=[searchTool, scrapeTool],
-    llm=self.llm,
-    backstory="""
+            name="Senior Researcher",
+            role="Senior Researcher",
+            goal="Discover primary sources and information for further research on {topic}",
+            tools=[searchTool, scrapeTool],
+            llm=self.llm,
+            backstory="""
 You are a subject matter expert in the field of the {topic}.
-You are a senior consultant that excels in research and excels at parsing out information.
-You do in-depth research by searching the web for reputable information.
-You look through websites and extract relevant information.
-You collect information that helps the audience learn something and make informed decisions.
+You specialize in finding reputable sources that will provide the most valuable and accurate information.
+You search the web for these reputable sources and information.
+You look through websites found in these searches to identify the highest value primary sources.
+Your sources will be used by the Market Analyst. 
 """,
-)
+        )
 
-    def writer(self):
+    def market_analyst(self):
         return Agent(
-    name="Writer",
-    role="Content Writer",
-    backstory="""
-You are a world-renowned technical writer that excels at summarizing complex topics.
-You provide summaries from research your team has gathered.
-You're working on a writing a new opinion piece about the topic: {topic}.
-You base your writing on the work of the Content Planner, who provides relevant context about the topic.
-You also provide objective and impartial insights and back them up with information provided by the Content Planner.
+            name="Market Analyst",
+            role="Senior Market Analyst",
+            goal="Utilize research to identify key companies that may be impacted by research on {topic}",
+            tools=[searchTool, scrapeTool, mapTool, contentTool],
+            llm=self.llm,
+            backstory="""
+You are a subject matter expert in businesses relevant to the topic: {topic}.
+You specialize in researching companies and parsing out the most valuable information relevant to them and the topic.
+You visit these companies websites to confirm they are relevant to the topic at hand.
+Your sources will be used by the Salesperson. 
 """,
-    goal="""
-Write insightful and factually accurate summary the topic: {topic}"
-""",
-    allow_delegation=False,
-    verbose=True,
-    llm=self.llm,
-)
+        )
 
-    def editor(self):
+    def salesperson(self):
         return Agent(
-    name="Editor",
-    role="Content Editor",
-    goal=f"""
-You provide an edited version of the summary of research that help solve the core problem.
+            name="Salesperson",
+            role="Senior Advertising Agent",
+            goal="Utilize marketing content to create a compelling, targeted email outreach message to companies relevant to {topic}",
+            llm=self.llm,
+            backstory="""
+You are a subject matter expert in businesses relevant to the topic: {topic}.
+You are an expert copywriter that takes an inquisitive, consultative approach to your outreaches.
+You clearly explain the value proposition of the product or service you are selling and how it impacts the prospect.
+You use qualified language that shows you've clearly done your research and understand the value proposition to the prospect
 """,
-    backstory=f"""
-You are a world-renowned technical editor that works for a top scientific journal.
-You edit summaries from the Content Writer.
-Your goal is to review the Content Writer's summary to ensure that it follows journalistic best practices, provides balanced viewpoints when providing opinions or assertions.",
-""",
-    allow_delegation=True,
-    verbose=True,
-    llm=self.llm,
-)
+        )
+
+    def research(self) -> List[Agent]:
+        return [self.senior_researcher()] 
+
+    def prospect(self) -> List[Agent]:
+        return [self.senior_researcher(), self.market_analyst()] 
+
+    def outreach(self) -> List[Agent]:
+        return [self.senior_researcher(), self.market_analyst(), self.salesperson()] 

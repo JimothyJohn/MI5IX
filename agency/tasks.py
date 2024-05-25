@@ -3,51 +3,65 @@ import warnings
 
 warnings.filterwarnings("ignore")
 from crewai import Task
+from models import SourceList, CompanyList, OutreachList, ContentList
+from agents import contentTool
 
-TIP = f"""
-If you do your BEST WORK, I'll give you a $10,000 commission!
-"""
-
-def research_task(agent):
+class ResearchTasks:
+    def research_topic(self, agent):
         return Task(
             description="""
-Search the internet for information on {topic}.
-Only use primary sources from reputable institutions.
-Make sure to use the most recent data as possible.
-Search through sites related to {topic}.
-Find key pieces of information that help.
-Cite your sources.
+Discover key words, context, sources, and terminology related to {topic}.
+Avoid sources that use buzzwords like {buzz}.
+Search the internet for information.
+Only use primary sources from reputable institutions and cite them accordingly.
+Only use the most recent data as possible.
 """,
             agent=agent,
             expected_output="""
-Summaries of these sources that help answer {topic}.""",
+At least 5 primary sources that will provide context around {topic} and help the audience understand how and where to do further research.
+""",
+            human_input=False,
+            output_pydantic=SourceList,
+            output_file="outputs/sources.json",
         )
 
-
-def write_report_task(agent):
-    return Task(
+    def find_companies(self, agent):
+        return Task(
             description="""
-Write a summary related to {topic}.
-Highlight key elements and important topics.
-Cite your sources.
+Utilize sources to identify key companies that are relevant to the topic: {topic}.
+Only provide companies wth locations that are in close proximity to or within {location}.
 """,
             agent=agent,
             expected_output="""
-A short, 3-pararaph summary with data provided whenever relevant. Include annotation and cite sources at the bottom.
+5 highly-qualified companies with their basic information and explanations of how they're relevant to {topic}
 """,
+            output_pydantic=CompanyList,
+            output_file="outputs/companies.json",
         )
 
-def edit_report_task(agent):
-    return Task(
+    def find_content(self, agent):
+        return Task(
             description="""
-Edit a summary related to {topic}.
-Ensure key elements and important topics are emphazised.
-Verify the sources are correct and information is factual.
-Ensure the summary is concise and clear.
-Edit it for readability and understanding over precision.
+Find videos on YouTube related to {topic} that are relevant to the companies found.
 """,
             agent=agent,
-            expected_output=f"""
-An edited report that is factually accurate, relevant, and understandable.
+            expected_output="""
+At least 5 videos that could stimulate interest about {topic} and explanations of how they're relevant to the companies.
 """,
+            tools=[contentTool],
+            output_pydantic=ContentList,
+            output_file="outputs/content.json",
+        )
+
+    def craft_outreach(self, agent):
+        return Task(
+            description="""
+Create a compelling, targeted email outreach message to companies relevant to {topic} utilizing the research and content gathered previously.
+""",
+            agent=agent,
+            expected_output="""
+An email message for each company that is compelling, targeted, and relevant to the companies found and includes at least one video along with a problem statement of what you're trying to solve.
+""",
+            output_pydantic=OutreachList,
+            output_file="outputs/outreaches.json",
         )

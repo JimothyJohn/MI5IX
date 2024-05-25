@@ -6,26 +6,16 @@ from langchain_openai import ChatOpenAI
 from agents import *
 from tasks import *
 
+
 class ResearchCrew:
-    def __init__(self, llm=ChatOpenAI(model_name="gpt-4o-2024-05-13", temperature=0.4)):  # Define your custom agents and tasks in agents.py and tasks.py
-        agency = ResearchAgency(llm)
-
-        researchAgent = agency.researcher()
-        writerAgent = agency.writer()
-
+    def build(self, agents, tasks) -> None:
         self.crew = Crew(
-            agents=[researchAgent, writerAgent],
-            tasks=[
-                research_task(
-                    researchAgent,
-                ),
-                write_report_task(
-                    writerAgent,
-                ),
-            ],
+            agents=agents,
+            tasks=tasks,
             verbose=True,
         )
 
-    def run(self, topic):
-        result = self.crew.kickoff(inputs={"topic": topic})
+
+    def run(self, inputs):
+        result = self.crew.kickoff(inputs=inputs)
         return result

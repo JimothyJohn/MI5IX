@@ -4,14 +4,14 @@ FROM python:3.11-slim-bookworm
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_PREFER_BINARY=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     git && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python packages
 COPY requirements.txt /
-RUN pip3 install -U --no-cache-dir -r \
+RUN pip3 install --no-cache-dir -r \
     /requirements.txt && \
     rm /requirements.txt
 
