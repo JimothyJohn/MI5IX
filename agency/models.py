@@ -33,13 +33,13 @@ class Content(BaseModel):
 class ContentList(BaseModel):
     content: List[Content]
 
+
 class Company(BaseModel):
     name: str
     website: HttpUrl
     industry: str
     hq_city: str
     hq_state: str
-    locations: Optional[int]
     employees: Optional[int]
     annual_revenue: Optional[int]
     relevance: str
@@ -48,6 +48,7 @@ class Company(BaseModel):
 # Define a Pydantic model that includes a list of sources
 class CompanyList(BaseModel):
     companies: List[Company]
+
 
 class Outreach(BaseModel):
     company: str

@@ -15,8 +15,9 @@ RUN pip3 install --no-cache-dir -r \
     /requirements.txt && \
     rm /requirements.txt
 
-COPY agency/ /app/agency/
-
 # Use a non-root user
-RUN useradd -m appuser
-USER appuser
+# RUN useradd -m appuser
+# USER appuser
+
+# Set CONFIG_DIR to a writable directory
+ENV CONFIG_DIR=/home/appuser/.embedchain

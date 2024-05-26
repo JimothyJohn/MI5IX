@@ -14,6 +14,8 @@ OPENAI_API_KEY=
 OPENAI_API_VERSION=2024-02-01
 # Get yours here: https://serper.dev/api-key
 SERPER_API_KEY=
+# Get yours here: https://console.cloud.google.com/google/maps-apis/home
+GPLACES_API_KEY=
 # Optional for Azure users
 AZURE_OPENAI_API_KEY=
 AZURE_OPENAI_RESOURCE=
@@ -24,10 +26,10 @@ AZURE_OPENAI_DEPLOYMENT=
 
 ```bash
 docker build -t mi5ix:latest -f .devcontainer/Dockerfile .
-docker run -p 80:8501 --env-file .env mi5ix:latest streamlit run /app/agency/__main__.py
+docker run -p 8501:8501 --env-file .env mi5ix:latest streamlit run /app/agency/__main__.py
 ```
 
-3. Open your Streamlit app at [http://localhost](http://localhost). Make sure to formulate your topic in the research example as a TOPIC, not a question:
+3. Open your Streamlit app at [http://localhost:8501](http://localhost:8501):
 
 ![app](docs/streamlit.png)
 
@@ -36,3 +38,4 @@ docker run -p 80:8501 --env-file .env mi5ix:latest streamlit run /app/agency/__m
 - [ ] Add Streamlit chat function to bring the human back in the loop
 
 - [ ] Add local Phi3 instance via Ollama
+
