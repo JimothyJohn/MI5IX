@@ -4,4 +4,5 @@ crewai[tools]
 playwright==1.43.0
 exa-py==1.0.9
 streamlit==1.35.0
-googlemaps
+googlemaps==4.2.0
+langchain-groq

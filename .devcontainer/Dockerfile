@@ -4,6 +4,9 @@ FROM python:3.11-slim-bookworm
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_PREFER_BINARY=1
 
+# Set CONFIG_DIR to a writable directory
+# ENV CONFIG_DIR=/home/appuser/.embedchain
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git && \
@@ -16,8 +19,5 @@ RUN pip3 install --no-cache-dir -r \
     rm /requirements.txt
 
 # Use a non-root user
-# RUN useradd -m appuser
-# USER appuser
-
-# Set CONFIG_DIR to a writable directory
-ENV CONFIG_DIR=/home/appuser/.embedchain
+RUN useradd -m appuser
+USER appuser

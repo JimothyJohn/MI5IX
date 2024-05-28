@@ -2,29 +2,21 @@
 import warnings
 
 warnings.filterwarnings("ignore")
-from typing import List
 from langchain_openai import ChatOpenAI
 from crewai import Agent
-from crewai_tools import ScrapeWebsiteTool, SerperDevTool, YoutubeVideoSearchTool
-from langchain_community.tools import GooglePlacesTool
+from tools.repository import *
 
 
-scrapeTool = ScrapeWebsiteTool()
-searchTool = SerperDevTool()
-mapTool = GooglePlacesTool()
-contentTool = YoutubeVideoSearchTool()
-
-
-class ResearchAgency:
-    def __init__(self, llm=ChatOpenAI(model_name="gpt-4o-2024-05-13", temperature=0.4)):
+class MarketResearchAgency:
+    def __init__(self, llm=ChatOpenAI(model_name="gpt-4o-2024-05-13", temperature=0.2)):
         self.llm = llm
 
-    def senior_researcher(self):
+    def researcher(self):
         return Agent(
-            name="Senior Researcher",
+            name="Researcher",
             role="Senior Researcher",
             goal="Discover primary sources and information for further research on {topic}",
-            tools=[searchTool, scrapeTool],
+            tools=[searchTool, websiteSearchTool],
             llm=self.llm,
             backstory="""
 You are a subject matter expert in the field of the {topic}.
@@ -45,7 +37,7 @@ Your sources will be used by the Market Analyst.
             name="Market Analyst",
             role="Senior Market Analyst",
             goal="Utilize research to identify key companies and organizations that may be impacted by {topic}",
-            tools=[searchTool, scrapeTool, mapTool],
+            tools=[searchTool, websiteSearchTool, mapTool],
             llm=self.llm,
             backstory="""
 You use sources provided by the Senior Researcher.
@@ -62,7 +54,7 @@ These companies and organizations will be used by the Financial Analyst.
             name="Content Coordinator",
             role="Senior Content Provider",
             goal="Find educational content relevant to {topic}",
-            tools=[searchTool, scrapeTool, contentTool],
+            tools=[searchTool, websiteSearchTool, contentTool],
             llm=self.llm,
             backstory="""
 You use sources provided by the Senior Researcher.
@@ -70,20 +62,5 @@ You are a subject matter expert in businesses relevant to the topic: {topic}.
 You specialize in finding videos, articles, and media that helps educate audiences about {topic}.
 You prioritize educational content from individuals or public instututions.
 Your content is used by the Salesperson.
-""",
-        )
-
-    def financial_analyst(self):
-        return Agent(
-            name="Financial Analyst",
-            role="Senior Financial Analyst",
-            goal="Utilize publicly available financial information to determine if companies are financially healthy and actively investing",
-            tools=[searchTool, scrapeTool],
-            llm=self.llm,
-            allow_delegation=True,
-            backstory="""
-You are an experienced business adept at analyzing financial information.
-You specialize in researching companies and parsing out the most valuable information relevant to their finances.
-Utilize earnings reports and news articles to make your judgements.
 """,
         )

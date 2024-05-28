@@ -12,6 +12,8 @@ class Source(BaseModel):
     website: HttpUrl
     title: Optional[str] = None
     author: Optional[str] = None
+    publisher: str
+    industry: str
     abstract: str
     published_date: Optional[datetime] = None
 
@@ -61,3 +63,20 @@ class Outreach(BaseModel):
 # Define a Pydantic model that includes a list of sources
 class OutreachList(BaseModel):
     messages: List[Outreach]
+
+
+class Product(BaseModel):
+    manufacturer: str
+    manufacturer_website: HttpUrl
+    year: str
+    model: str
+    part_number: Optional[str] = None
+    product_webpage: Optional[HttpUrl] = None
+    price: int
+    required_features: List[str]
+    missing_features: List[str]
+    reviews: str
+
+
+class ProductList(BaseModel):
+    products: List[Product]
